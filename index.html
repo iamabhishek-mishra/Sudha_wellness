@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Sudha Wellness &mdash; Live Webinar | Holistic Health</title>
-  <meta name="description" content="Join Dr. Ritu Raj Agarwala live on Zoom. Free webinar on gut health, mental clarity and Ayurveda. Get Zoom link instantly on WhatsApp."/>
+  <meta name="description" content="Join Dr. Ritu Raj Agarwala live on Google Meet. Free webinar on gut health, mental clarity and Ayurveda. Get the Meet link instantly by email and WhatsApp."/>
   <link rel="stylesheet" href="style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet"/>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -13,7 +13,7 @@
 <!-- TOP ANNOUNCEMENT BAR -->
 <div class="announce-bar">
   <span class="announce-dot"></span>
-  <strong>Health &amp; Wellness Awareness Webinar</strong> &nbsp;&bull;&nbsp; 21 July 2026 &nbsp;&bull;&nbsp; 7:00 PM IST &nbsp;&bull;&nbsp;
+  <strong>Health &amp; Wellness Awareness Webinar</strong> &nbsp;&bull;&nbsp; 21 July 2026 &nbsp;&bull;&nbsp; 7:00 PM UTC &nbsp;&bull;&nbsp;
   <a href="#register" class="announce-link">Reserve Your Seat &rarr;</a>
 </div>
 
@@ -21,7 +21,7 @@
 <nav class="navbar" id="mainNav">
   <div class="nav-wrap">
     <a href="index.html" class="nav-logo">
-      <img src="" alt="Sudha Wellness" class="nav-logo-img"/>
+      <img src="LOGO SW.jpeg" alt="Sudha Wellness" class="nav-logo-img"/>
     </a>
 
     <ul class="nav-links" id="navLinks">
@@ -56,7 +56,7 @@
           <span class="chip-dot"></span> Live Webinar
         </span>
         <span class="chip chip-free">Free Registration</span>
-        <span class="chip chip-zoom">Zoom</span>
+        <span class="chip chip-zoom">Google Meet</span>
       </div>
 
       <h1 class="hero-h1">
@@ -73,11 +73,11 @@
         </div>
         <div class="hm-item">
           <svg class="hm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <div><strong>7:00 &ndash; 8:30 PM</strong><span>IST</span></div>
+          <div><strong>7:00 &ndash; 8:30 PM</strong><span>UTC</span></div>
         </div>
         <div class="hm-item">
           <svg class="hm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><polyline points="16 2 12 7 8 2"/></svg>
-          <div><strong>Live on Zoom</strong><span>Link via WhatsApp</span></div>
+          <div><strong>Live on Google Meet</strong><span>Link via email &amp; WhatsApp</span></div>
         </div>
       </div>
 
@@ -385,7 +385,7 @@
         <div class="reg-includes">
           <div class="reg-inc-title">What&rsquo;s included:</div>
           <div class="ri-item"><span class="ri-check">&#10003;</span> 2-hour live wellness session with Dr. Sudha</div>
-          <div class="ri-item"><span class="ri-check">&#10003;</span> Zoom meeting link via WhatsApp instantly</div>
+          <div class="ri-item"><span class="ri-check">&#10003;</span> Google Meet link via email &amp; WhatsApp instantly</div>
           <div class="ri-item"><span class="ri-check">&#10003;</span> Wellness workbook PDF (&#8377;499 value)</div>
           <div class="ri-item"><span class="ri-check">&#10003;</span> 7-day Ayurvedic detox meal plan</div>
           <div class="ri-item"><span class="ri-check">&#10003;</span> 7-day recording access</div>
@@ -414,7 +414,7 @@
         <div class="reg-form-card">
           <div class="rfc-header">
             <h3>Book Your Seat &#8377;99</h3>
-            <p>Zoom link sent to WhatsApp after payment</p>
+            <p>Meet link sent by email and WhatsApp after registration</p>
           </div>
 
           <form id="registerForm" onsubmit="handleRegistration(event)" novalidate>
@@ -435,6 +435,10 @@
               <label>Email Address <span class="rf-req">*</span></label>
               <input type="email" id="email" placeholder="priya@example.com" required/>
             </div>
+
+            <p class="rf-note" style="justify-content:flex-start;margin:-4px 0 12px;color:var(--muted);">
+              We will email your Meet link plus a temporary dashboard password after registration.
+            </p>
 
             <div class="rf-group">
               <label>Primary Health Goal</label>
@@ -457,8 +461,8 @@
                   <input type="radio" name="regType" value="free" checked onchange="togglePayment('free')"/>
                   <div class="rfto-inner">
                     <div class="rfto-left">
-                      <strong>Early Bird &#8377;99</strong>
-                      <small>Full session + Zoom link on WhatsApp</small>
+                      <strong>Free Registration</strong>
+                      <small>Full session + Meet link by email and WhatsApp</small>
                     </div>
                     <span class="rfto-price">FREE</span>
                   </div>
@@ -467,10 +471,10 @@
                   <input type="radio" name="regType" value="paid" onchange="togglePayment('paid')"/>
                   <div class="rfto-inner">
                     <div class="rfto-left">
-                      <strong>VIP &#11088; &#8377;199</strong>
-                      <small>Full session + Recording + Priority Q&amp;A</small>
+                      <strong>Early Bird Access &#8377;99</strong>
+                      <small>Full session + Meet link + workbook</small>
                     </div>
-                    <span class="rfto-price rfto-paid">&#8377;499</span>
+                    <span class="rfto-price rfto-paid">&#8377;99</span>
                   </div>
                 </label>
               </div>
@@ -478,44 +482,22 @@
 
             <!-- Payment Methods -->
             <div id="paymentMethodSection" style="display:none;" class="rf-pay-methods">
-              <label class="rf-type-label">Pay Securely</label>
+              <label class="rf-type-label">Secure Payment</label>
               <div class="rf-pay-btns">
-                <button type="button" class="rpb rzp" onclick="payWithRazorpay()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                  Razorpay &mdash; UPI / Card / NetBanking
-                </button>
                 <button type="button" class="rpb ppe" onclick="payWithPhonePe()">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
-                  PhonePe UPI
-                </button>
-                <button type="button" class="rpb upi" onclick="showUPIQR()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                  Scan UPI QR Code
+                  Pay &#8377;99 with PhonePe Gateway
                 </button>
               </div>
-            </div>
-
-            <!-- UPI QR -->
-            <div id="upiQRSection" style="display:none;" class="rf-upi-box">
-              <p>Scan with any UPI app to pay &#8377;499</p>
-              <div class="rf-qr-img">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=sudhawellness@okaxis&pn=SudhaWellness&am=499&cu=INR" alt="UPI QR" width="160" height="160"/>
-              </div>
-              <p class="rf-upi-id">UPI ID: <strong>sudhawellness@okaxis</strong></p>
-              <div class="rf-group" style="margin-top:12px">
-                <label>Enter UTR / Transaction ID</label>
-                <input type="text" id="utrId" placeholder="e.g. 426891234567"/>
-              </div>
-              <button type="button" class="btn-upi-confirm" onclick="confirmUPIPayment()">Confirm Payment</button>
             </div>
 
             <button type="submit" class="btn-register" id="submitBtn">
-              Pay &#8377;99 &amp; Book Seat
+              Register &amp; Get Meet Link
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
             <p class="rf-note">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-              256-bit SSL &nbsp;&bull;&nbsp; Zoom link on WhatsApp &nbsp;&bull;&nbsp; Early Bird &#8377;99
+              256-bit SSL &nbsp;&bull;&nbsp; Meet link on email &amp; WhatsApp &nbsp;&bull;&nbsp; Temporary login by email
             </p>
           </form>
         </div>
@@ -531,7 +513,7 @@
     <button class="sw-modal-x" onclick="closeModal()" aria-label="Close">&times;</button>
     <div class="swm-icon">&#127881;</div>
     <h3>You&rsquo;re Registered!</h3>
-    <p id="modalMessage">Your Zoom link has been sent to your WhatsApp number.</p>
+    <p id="modalMessage">Your Meet link has been sent to your email and WhatsApp number.</p>
     <div class="swm-details" id="modalDetails"></div>
     <div class="swm-actions">
       <a href="dashboard.html" class="btn-swm-primary">View My Dashboard</a>
@@ -550,12 +532,12 @@
     </div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFAQ(this)"><span>How will I get the Zoom link?</span><svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">Your Zoom meeting link is sent automatically to your WhatsApp number within 2 minutes of registration. Make sure you enter the correct 10-digit number.</div>
+        <button class="faq-q" onclick="toggleFAQ(this)"><span>How will I get the Meet link?</span><svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">Your Google Meet link is sent automatically to your email and WhatsApp number within 2 minutes of registration. Make sure you enter the correct email and 10-digit number.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFAQ(this)"><span>What is the registration fee?</span><svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">The Early Bird price is &#8377;99 (till 30 June 2026). From 1 July 2026 the price is &#8377;199. VIP includes recording access and priority Q&amp;A at &#8377;199.</div>
+        <div class="faq-a">The Early Bird price is &#8377;99. Your payment gives you the live session link and included webinar resources.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFAQ(this)"><span>Will I get a recording?</span><svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
@@ -563,7 +545,7 @@
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFAQ(this)"><span>Is my payment secure?</span><svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">All payments are processed via Razorpay and PhonePe with 256-bit SSL encryption. We never store your card details.</div>
+        <div class="faq-a">Payments are processed through the PhonePe gateway. We never store your card or UPI details.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFAQ(this)"><span>What if I miss the live session?</span><svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>

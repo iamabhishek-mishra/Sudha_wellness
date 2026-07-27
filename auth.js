@@ -268,11 +268,11 @@ async function handleLogin(e) {
     const DEMO = {
       id: 'demo_001', firstName: 'Demo', lastName: 'User',
       email: 'demo@sudhawellness.com', password: 'demo1234',
-      phone: '+919876543210', city: 'Mumbai', memberType: 'VIP',
+      phone: '+919876543210', city: 'Mumbai', memberType: 'FREE',
       registrations: [
         { id: 'reg_001', webinarTitle: 'Holistic Wellness – Live Webinar',
-          webinarDate: '2025-07-20T18:00:00+05:30', regType: 'VIP',
-          paymentId: 'pay_demo123', paymentMethod: 'Razorpay', amount: 499,
+          webinarDate: '2026-07-21T19:00:00Z', regType: 'FREE',
+          paymentId: null, paymentMethod: null, amount: 0,
           zoomLink: 'https://zoom.us/j/DEMO_MEETING', name: 'Demo User',
           email: 'demo@sudhawellness.com', phone: '+919876543210',
           status: 'upcoming', registeredAt: new Date(Date.now() - 3*86400000).toISOString() },

@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register for Webinar – Sudha Wellness</title>
-  <meta name="description" content="Register for the Sudha Wellness holistic wellness webinar. Free seat + optional VIP upgrade, Zoom link on WhatsApp, and account login access." />
+  <meta name="description" content="Register for the Sudha Wellness holistic wellness webinar. Free seat + optional VIP upgrade, Google Meet link by email and WhatsApp, and account login access." />
   <meta name="theme-color" content="#2d7a4f" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="auth.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
 
@@ -20,11 +21,11 @@
     <div class="hero-content">
       <span class="badge">🔴 LIVE WEBINAR</span>
       <h1>Reserve Your Seat for the<br /><span class="highlight">Holistic Wellness Webinar</span></h1>
-      <p class="hero-sub">Fill in your details below to receive the Zoom link instantly on WhatsApp. You can also create a password so you can log in later and see your booking in the dashboard.</p>
+      <p class="hero-sub">Fill in your details below to receive the Google Meet link and a temporary dashboard password by email. Your WhatsApp number will also receive the webinar link when WhatsApp is configured.</p>
       <div class="hero-meta">
-        <div class="meta-item">📅 <strong>Sunday, 20th July 2025</strong></div>
-        <div class="meta-item">⏰ <strong>6:00 PM – 8:00 PM IST</strong></div>
-        <div class="meta-item">💻 <strong>Live on Zoom</strong></div>
+        <div class="meta-item">📅 <strong>Tuesday, 21st July 2026</strong></div>
+        <div class="meta-item">⏰ <strong>7:00 PM – 8:30 PM UTC</strong></div>
+        <div class="meta-item">💻 <strong>Live on Google Meet</strong></div>
       </div>
     </div>
   </section>
@@ -34,14 +35,14 @@
     <div class="container">
       <div class="section-tag">Limited Seats</div>
       <h2>Register for the Webinar</h2>
-      <p class="section-sub">Seats are limited. Secure your spot now and get the Zoom link instantly on WhatsApp!</p>
+      <p class="section-sub">Seats are limited. Secure your spot now and get the Meet link instantly by email and WhatsApp!</p>
 
       <div class="register-wrapper">
         <div class="register-info">
           <h3>What you get:</h3>
           <ul>
             <li>✅ Live 2-hour wellness session</li>
-            <li>✅ Zoom meeting link via WhatsApp instantly</li>
+            <li>✅ Google Meet link via email and WhatsApp instantly</li>
             <li>✅ Free wellness workbook (₹499 value)</li>
             <li>✅ 7-day detox meal plan</li>
             <li>✅ Recording access for 7 days</li>
@@ -72,26 +73,9 @@
               <input type="email" id="email" placeholder="your@email.com" required />
             </div>
 
-            <!-- Account (optional) -->
-            <div class="account-box">
-              <label class="account-toggle">
-                <input type="checkbox" id="createAccount" checked onchange="toggleAccountFields()" />
-                Create an account so you can login later & view your booking in Dashboard
-              </label>
-              <div id="accountFields">
-                <div class="form-group">
-                  <label>Create Password *</label>
-                  <input type="password" id="regPasswordInline" placeholder="Min. 8 characters" minlength="8" autocomplete="new-password" />
-                </div>
-                <div class="form-group">
-                  <label>Confirm Password *</label>
-                  <input type="password" id="regConfirmInline" placeholder="Re-enter password" minlength="8" autocomplete="new-password" />
-                </div>
-                <p class="form-note" style="margin-top:0;text-align:left;">
-                  Already have an account? <a href="login.html" style="color:var(--green);font-weight:700;text-decoration:none;">Login here</a>
-                </p>
-              </div>
-            </div>
+            <p class="form-note" style="margin-top:-4px;text-align:left;">
+              We will create your dashboard login automatically and email you a temporary password with the Meet link.
+            </p>
 
             <div class="form-group">
               <label>Your Primary Health Goal</label>
@@ -116,7 +100,7 @@
                     <span class="opt-icon">🎁</span>
                     <div>
                       <strong>Free Registration</strong>
-                      <small>Basic access + WhatsApp link</small>
+                      <small>Basic access + Meet link</small>
                     </div>
                     <span class="opt-price">FREE</span>
                   </div>
@@ -129,7 +113,7 @@
                       <strong>VIP Registration</strong>
                       <small>All access + 1:1 Q&A slot + Recordings</small>
                     </div>
-                    <span class="opt-price">₹499</span>
+                    <span class="opt-price">₹99</span>
                   </div>
                 </label>
               </div>
@@ -137,39 +121,19 @@
 
             <!-- Payment Method (shown for paid) -->
             <div class="payment-method-section" id="paymentMethodSection" style="display:none;">
-              <h4>Payment Method</h4>
+              <h4>Secure Payment</h4>
               <div class="payment-methods">
-                <button type="button" class="pay-btn razorpay-btn" onclick="payWithRazorpay()">
-                  <img src="https://razorpay.com/favicon.ico" width="18" onerror="this.style.display='none'" />
-                  Razorpay (UPI / Card / NetBanking)
-                </button>
                 <button type="button" class="pay-btn phonepe-btn" onclick="payWithPhonePe()">
-                  <span>📱</span> PhonePe UPI
-                </button>
-                <button type="button" class="pay-btn upi-btn" onclick="showUPIQR()">
-                  <span>₹</span> Scan UPI QR Code
+                  <span>PhonePe</span>
+                  Pay ₹99 with PhonePe Gateway
                 </button>
               </div>
-            </div>
-
-            <!-- UPI QR Section -->
-            <div id="upiQRSection" style="display:none;" class="upi-qr-box">
-              <p>Scan to pay ₹499 via any UPI app</p>
-              <div class="qr-placeholder">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=sudhaWELLNESS@okaxis&pn=SudhaWellness&am=499&cu=INR&tn=WebinarVIP" alt="UPI QR Code" width="180" />
-              </div>
-              <p class="upi-id">UPI ID: <strong>sudhawellness@okaxis</strong></p>
-              <div class="form-group">
-                <label>Enter UTR / Transaction ID after payment</label>
-                <input type="text" id="utrId" placeholder="e.g. 426891234567" />
-              </div>
-              <button type="button" class="btn-primary" onclick="confirmUPIPayment()">Confirm Payment</button>
             </div>
 
             <button type="submit" class="btn-submit" id="submitBtn">
-              🚀 Register & Get WhatsApp Link
+              Register & Get Meet Link
             </button>
-            <p class="form-note">📱 Zoom link will be sent to your WhatsApp within 2 minutes</p>
+            <p class="form-note">Meet link and temporary login password will be sent to your email within 2 minutes</p>
           </form>
         </div>
       </div>
@@ -181,7 +145,7 @@
     <div class="modal-box">
       <div class="modal-icon">🎉</div>
       <h3>You're Registered!</h3>
-      <p id="modalMessage">Thank you for registering! Your Zoom meeting link has been sent to your WhatsApp number.</p>
+      <p id="modalMessage">Thank you for registering! Your Google Meet link has been sent to your email and WhatsApp number.</p>
       <div class="modal-details" id="modalDetails"></div>
       <button onclick="closeModal()" class="btn-primary">Done</button>
     </div>
@@ -193,4 +157,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-

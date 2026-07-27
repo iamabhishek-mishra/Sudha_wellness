@@ -4,13 +4,13 @@
 
 // ---- CONFIG ----
 const CONFIG = {
-  WEBINAR_DATE:  new Date('2026-07-21T19:00:00+05:30'),
-  RAZORPAY_KEY:  'rzp_test_REPLACE_WITH_YOUR_KEY',
-  VIP_AMOUNT:    49900,                               // ₹199 in paise (regular), ₹99 early bird
+  WEBINAR_DATE:  new Date('2026-07-21T19:00:00Z'),
+  RAZORPAY_KEY:  'rzp_test_REPLACE_WITH_YOUR_TEST_KEY_ID',  // Get from https://dashboard.razorpay.com/app/keys
+  VIP_AMOUNT:    9900,                                // ₹99 in paise
   BACKEND_URL:   'http://localhost:3000',
-  ZOOM_LINK:     'https://zoom.us/j/REPLACE_WITH_MEETING_ID?pwd=REPLACE_PASSWORD',
-  ZOOM_MEETING_ID: '123 456 7890',
-  ZOOM_PASSWORD: 'wellness',
+  MEET_LINK:     'https://meet.google.com/kpc-doyj-bzm',
+  MEETING_ID:    '',
+  MEETING_PASSWORD: '',
 };
 
 // ============================================
@@ -18,9 +18,24 @@ const CONFIG = {
 //  Saves registration to logged-in user profile
 // ============================================
 const WEBINAR_TITLE = 'Holistic Wellness – Live Webinar';
-const WEBINAR_DATE_STR = '2026-07-21T19:00:00+05:30';
+const WEBINAR_DATE_STR = '2026-07-21T19:00:00Z';
 
 let isSubmittingRegistration = false;
+
+async function loadWebinarDetails() {
+  try {
+    const response = await fetch(`${CONFIG.BACKEND_URL}/api/webinar/details`);
+    if (!response.ok) return;
+    const details = await response.json();
+    if (details.meetLink) CONFIG.MEET_LINK = details.meetLink;
+    if (details.meetingId !== undefined) CONFIG.MEETING_ID = details.meetingId;
+    if (details.meetingPassword !== undefined) CONFIG.MEETING_PASSWORD = details.meetingPassword;
+    if (details.vipAmountPaise) CONFIG.VIP_AMOUNT = Number(details.vipAmountPaise);
+    if (details.razorpayKeyId) CONFIG.RAZORPAY_KEY = details.razorpayKeyId;
+  } catch (_) {
+    // Keep local defaults when the backend is offline.
+  }
+}
 
 function registrationDedupeKey(reg) {
   return (reg.webinarTitle || WEBINAR_TITLE) + '|' + (reg.phone || '');
@@ -55,17 +70,18 @@ function buildRegistrationRecord(formData) {
   const regType = formData.regType === 'VIP' ? 'VIP' : 'FREE';
 
   return {
-    id:            existing?.id || ('wreg_' + formData.phone.replace(/\D/g, '') + '_20250720'),
+    id:            existing?.id || ('wreg_' + formData.phone.replace(/\D/g, '') + '_20260721'),
     webinarTitle:  WEBINAR_TITLE,
     webinarDate:   WEBINAR_DATE_STR,
     regType,
-    amount:        regType === 'VIP' ? 499 : 0,
+    amount:        regType === 'VIP' ? 99 : 0,
     paymentId:     formData.paymentId     || existing?.paymentId     || null,
     paymentMethod: formData.paymentMethod || existing?.paymentMethod || null,
-    utrId:         formData.utrId         || existing?.utrId         || null,
-    zoomLink:      CONFIG.ZOOM_LINK,
-    zoomMeetingId: CONFIG.ZOOM_MEETING_ID,
-    zoomPassword:  CONFIG.ZOOM_PASSWORD,
+    utrId:         null,
+    zoomLink:      CONFIG.MEET_LINK,
+    meetLink:      CONFIG.MEET_LINK,
+    meetingId:     CONFIG.MEETING_ID,
+    meetingPassword: CONFIG.MEETING_PASSWORD,
     name:          formData.name,
     email:         formData.email,
     phone:         formData.phone,
@@ -228,72 +244,62 @@ function splitName(fullName) {
   };
 }
 
-async function ensureAccountForRegistration() {
-  const cb = document.getElementById('createAccount');
-  const shouldCreate = cb ? cb.checked : false;
-  if (!shouldCreate) return { createdOrLoggedIn: false };
+function generateLocalTemporaryPassword() {
+  const suffix = Math.random().toString(36).slice(2, 10).toUpperCase();
+  return 'SW-' + suffix;
+}
 
+async function ensureAccountForRegistration() {
   const fullName = document.getElementById('fullName')?.value?.trim() || '';
   const email = document.getElementById('email')?.value?.trim() || '';
   const phone10 = document.getElementById('phone')?.value?.trim() || '';
-  const password = document.getElementById('regPasswordInline')?.value || '';
-  const confirm = document.getElementById('regConfirmInline')?.value || '';
 
-  if (!password || password.length < 8) {
-    throw new Error('Please create a password (minimum 8 characters) to create an account.');
-  }
-  if (password !== confirm) {
-    throw new Error('Passwords do not match. Please confirm your password.');
+  if (!fullName || !email || !phone10) {
+    throw new Error('Please enter your name, WhatsApp number, and email first.');
   }
 
   const { firstName, lastName } = splitName(fullName);
   const phone = '+91' + phone10;
 
-  // Try backend register → if already exists, try backend login.
+  // Try backend auto-account first. It creates or refreshes a temporary login password.
   try {
-    const res = await fetch(CONFIG.BACKEND_URL + '/api/auth/register', {
+    const res = await fetch(CONFIG.BACKEND_URL + '/api/auth/auto-account', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ firstName, lastName, email, phone, password, whatsappConsent: true }),
+      body: JSON.stringify({ firstName, lastName, email, phone, whatsappConsent: true }),
     });
     const data = await res.json();
 
-    if (data?.success && data?.token && data?.user) {
+    if (data?.success && data?.token && data?.user && data?.temporaryPassword) {
       localStorage.setItem('sw_user', JSON.stringify(data.user));
       localStorage.setItem('sw_token', data.token);
-      return { createdOrLoggedIn: true, mode: 'registered' };
+      return {
+        createdOrLoggedIn: true,
+        mode: data.created ? 'auto_registered' : 'auto_login_refreshed',
+        loginEmail: data.user.email || email,
+        loginPassword: data.temporaryPassword,
+      };
     }
 
-    // If email exists, try login
-    if (res.status === 409) {
-      const loginRes = await fetch(CONFIG.BACKEND_URL + '/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const loginData = await loginRes.json();
-      if (loginData?.success && loginData?.token && loginData?.user) {
-        localStorage.setItem('sw_user', JSON.stringify(loginData.user));
-        localStorage.setItem('sw_token', loginData.token);
-        return { createdOrLoggedIn: true, mode: 'logged_in' };
-      }
-      throw new Error(loginData?.message || 'Account exists, but login failed. Please check your password.');
-    }
-
-    throw new Error(data?.message || 'Could not create account. Please try again.');
+    throw new Error(data?.message || 'Could not create your temporary login. Please try again.');
   } catch (e) {
     // Offline/local fallback (same storage model as auth.js)
+    const temporaryPassword = generateLocalTemporaryPassword();
     const users = JSON.parse(localStorage.getItem('sw_users') || '[]');
     const existing = users.find(u => u.email === email);
 
     if (existing) {
-      // Login fallback
-      if (existing.password && existing.password !== password) {
-        throw new Error('Account exists, but password is incorrect. Please login from the Login page.');
-      }
+      existing.password = temporaryPassword;
+      existing.phone = existing.phone || phone;
       localStorage.setItem('sw_user', JSON.stringify(existing));
       localStorage.setItem('sw_token', 'local_' + existing.id);
-      return { createdOrLoggedIn: true, mode: 'logged_in_offline' };
+      localStorage.setItem('sw_users', JSON.stringify(users));
+      return {
+        createdOrLoggedIn: true,
+        mode: 'auto_login_refreshed_offline',
+        loginEmail: existing.email,
+        loginPassword: temporaryPassword,
+      };
     }
 
     const newUser = {
@@ -302,7 +308,7 @@ async function ensureAccountForRegistration() {
       lastName,
       email,
       phone,
-      password,
+      password: temporaryPassword,
       city: '',
       whatsappConsent: true,
       memberType: 'FREE',
@@ -313,7 +319,12 @@ async function ensureAccountForRegistration() {
     localStorage.setItem('sw_users', JSON.stringify(users));
     localStorage.setItem('sw_user', JSON.stringify(newUser));
     localStorage.setItem('sw_token', 'local_' + newUser.id);
-    return { createdOrLoggedIn: true, mode: 'registered_offline' };
+    return {
+      createdOrLoggedIn: true,
+      mode: 'auto_registered_offline',
+      loginEmail: email,
+      loginPassword: temporaryPassword,
+    };
   }
 }
 
@@ -323,40 +334,18 @@ function togglePayment(type) {
   document.getElementById('opt-paid').classList.remove('active');
   document.getElementById('opt-' + type).classList.add('active');
   document.getElementById('paymentMethodSection').style.display = type === 'paid' ? 'block' : 'none';
-  document.getElementById('upiQRSection').style.display = 'none';
   const submitBtn = document.getElementById('submitBtn');
   if (type === 'paid') {
-    submitBtn.textContent = '⭐ Choose Payment Method Above';
-    submitBtn.disabled = true;
+    submitBtn.textContent = 'Pay ₹99 with PhonePe';
+    submitBtn.disabled = false;
   } else {
-    submitBtn.textContent = '🚀 Register & Get WhatsApp Link';
+    submitBtn.textContent = 'Register & Get Meet Link';
     submitBtn.disabled = false;
   }
 }
 
-// ---- SHOW UPI QR ----
-function showUPIQR() {
-  document.getElementById('upiQRSection').style.display = 'block';
-  document.getElementById('submitBtn').disabled = true;
-  document.getElementById('submitBtn').textContent = '⏳ Complete UPI Payment First';
-}
-
-// ---- CONFIRM UPI PAYMENT ----
-function confirmUPIPayment() {
-  const utr = document.getElementById('utrId').value.trim();
-  if (!utr || utr.length < 8) {
-    alert('Please enter a valid UTR / Transaction ID from your UPI app.');
-    return;
-  }
-  const submitBtn = document.getElementById('submitBtn');
-  submitBtn.disabled = false;
-  submitBtn.textContent = '🚀 Register & Confirm Registration';
-  document.getElementById('upiQRSection').style.display = 'none';
-  alert('✅ UTR saved! Click the Register button below to complete.');
-}
-
 // ---- RAZORPAY PAYMENT ----
-function payWithRazorpay() {
+async function payWithRazorpay() {
   const name  = document.getElementById('fullName').value.trim();
   const phone = document.getElementById('phone').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -364,21 +353,71 @@ function payWithRazorpay() {
     alert('Please fill in your Name, WhatsApp number, and Email first.');
     return;
   }
+  if (typeof Razorpay === 'undefined') {
+    alert('Payment checkout could not load. Please refresh the page and try again.');
+    return;
+  }
+
+  let order;
+  try {
+    const orderResponse = await fetch(`${CONFIG.BACKEND_URL}/api/payment/razorpay/create-order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, email }),
+    });
+    order = await orderResponse.json();
+    if (!orderResponse.ok || !order.success || !order.orderId) {
+      alert(order.message || 'Could not create payment order. Please try again.');
+      return;
+    }
+  } catch (_) {
+    alert('Could not connect to payment server. Please try again.');
+    return;
+  }
+
   const options = {
-    key:         CONFIG.RAZORPAY_KEY,
-    amount:      CONFIG.VIP_AMOUNT,
-    currency:    'INR',
+    key:         order.keyId || CONFIG.RAZORPAY_KEY,
+    amount:      order.amount || CONFIG.VIP_AMOUNT,
+    currency:    order.currency || 'INR',
+    order_id:    order.orderId,
     name:        'Sudha Wellness Webinar',
     description: 'VIP Webinar Registration',
     image:       'https://via.placeholder.com/60x60/2d7a4f/ffffff?text=SW',
     prefill:     { name, email, contact: '+91' + phone },
     theme:       { color: '#2d7a4f' },
     method:      { upi: true, card: true, netbanking: true, wallet: true },
-    handler: function (response) {
+    handler: async function (response) {
+      let verified;
+      try {
+        const verifyResponse = await fetch(`${CONFIG.BACKEND_URL}/api/payment/razorpay/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...response, name, phone, email }),
+        });
+        verified = await verifyResponse.json();
+        if (!verifyResponse.ok || !verified.success) {
+          alert(verified.message || 'Payment could not be verified. Please contact support.');
+          return;
+        }
+      } catch (_) {
+        alert('Payment verification failed. Please contact support before retrying.');
+        return;
+      }
+
       const formData = collectFormData();
-      formData.paymentId     = response.razorpay_payment_id;
-      formData.paymentMethod = 'Razorpay';
+      formData.paymentId     = verified.paymentId || response.razorpay_payment_id;
+      formData.paymentMethod = verified.paymentMethod || 'Razorpay';
       formData.regType       = 'VIP';
+      try {
+        const accountResult = await ensureAccountForRegistration();
+        if (accountResult.createdOrLoggedIn) {
+          formData.loginEmail = accountResult.loginEmail || formData.email;
+          formData.loginPassword = accountResult.loginPassword || '';
+        }
+      } catch (e) {
+        alert(e.message || 'Account setup failed.');
+        return;
+      }
       submitRegistration(formData);
     },
     modal: { ondismiss: function () { console.log('Razorpay closed'); } },
@@ -391,7 +430,7 @@ function payWithRazorpay() {
 }
 
 // ---- PHONEPE PAYMENT ----
-function payWithPhonePe() {
+async function payWithPhonePe() {
   const name  = document.getElementById('fullName').value.trim();
   const phone = document.getElementById('phone').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -399,26 +438,60 @@ function payWithPhonePe() {
     alert('Please fill in your Name, WhatsApp number, and Email first.');
     return;
   }
+
+  let accountResult = { createdOrLoggedIn: false };
+  try {
+    accountResult = await ensureAccountForRegistration();
+  } catch (e) {
+    alert(e.message || 'Account setup failed.');
+    return;
+  }
+
   // Store pending data so we can save after redirect-back
   const pending = { name, phone: '+91' + phone, email,
                     goal: document.getElementById('goal').value,
-                    regType: 'VIP', paymentMethod: 'PhonePe' };
+                    regType: 'VIP', paymentMethod: 'PhonePe',
+                    loginEmail: accountResult.loginEmail || email,
+                    loginPassword: accountResult.loginPassword || '' };
   localStorage.setItem('sw_pending_reg', JSON.stringify(pending));
+
+  const submitBtn = document.getElementById('submitBtn');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Opening PhonePe...';
+  }
 
   fetch(`${CONFIG.BACKEND_URL}/api/payment/phonepe/initiate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ amount: CONFIG.VIP_AMOUNT, name, phone, email }),
+    body: JSON.stringify({
+      name,
+      phone,
+      email,
+      goal: pending.goal,
+      loginEmail: pending.loginEmail,
+      loginPassword: pending.loginPassword,
+    }),
   })
     .then(r => r.json())
     .then(data => {
       if (data.success && data.redirectUrl) {
         window.location.href = data.redirectUrl;
       } else {
-        alert('PhonePe initiation failed. Please try Razorpay or UPI QR instead.');
+        alert(data.message || 'PhonePe initiation failed. Please try again.');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Pay ₹99 with PhonePe';
+        }
       }
     })
-    .catch(() => alert('Could not connect to payment server. Please try another method.'));
+    .catch(() => {
+      alert('Could not connect to payment server. Please try again.');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Pay ₹99 with PhonePe';
+      }
+    });
 }
 
 // ---- COLLECT FORM DATA ----
@@ -429,7 +502,7 @@ function collectFormData() {
     email: document.getElementById('email').value.trim(),
     goal:  document.getElementById('goal').value,
     regType: document.querySelector('input[name="regType"]:checked').value === 'paid' ? 'VIP' : 'FREE',
-    utrId: document.getElementById('utrId')?.value?.trim() || null,
+    utrId: null,
     registeredAt: new Date().toISOString(),
   };
 }
@@ -438,23 +511,25 @@ function collectFormData() {
 async function handleRegistration(event) {
   event.preventDefault();
 
-  // Create/login account first (optional), then register webinar
+  const regType = document.querySelector('input[name="regType"]:checked').value;
+  if (regType === 'paid') {
+    payWithPhonePe();
+    return;
+  }
+
+  let accountResult = { createdOrLoggedIn: false };
   try {
-    await ensureAccountForRegistration();
+    accountResult = await ensureAccountForRegistration();
   } catch (e) {
     alert(e.message || 'Account setup failed.');
     return;
   }
 
-  const regType = document.querySelector('input[name="regType"]:checked').value;
-  if (regType === 'paid') {
-    const utr = document.getElementById('utrId')?.value?.trim();
-    if (!utr) {
-      alert('Please complete payment first using one of the payment options above.');
-      return;
-    }
-  }
   const formData = collectFormData();
+  if (accountResult.createdOrLoggedIn) {
+    formData.loginEmail = accountResult.loginEmail || formData.email;
+    formData.loginPassword = accountResult.loginPassword || '';
+  }
   await submitRegistration(formData);
 }
 
@@ -471,12 +546,13 @@ async function submitRegistration(formData) {
 
   // Build once — stable id prevents duplicate rows in dashboard
   const registration = buildRegistrationRecord(formData);
+  const requiresVerifiedPayment = formData.regType === 'VIP';
 
   try {
-    // 1. Save locally first (works offline, instant)
-    saveRegistrationToUser(registration);
+    // Save free registrations locally first. Paid registrations wait for backend verification.
+    if (!requiresVerifiedPayment) saveRegistrationToUser(registration);
 
-    // 2. Try to register on backend (sends WhatsApp)
+    // Try to register on backend (sends email + WhatsApp)
     const response = await fetch(`${CONFIG.BACKEND_URL}/api/register`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -487,42 +563,72 @@ async function submitRegistration(formData) {
         goal:      formData.goal,
         regType:   formData.regType,
         paymentId: formData.paymentId    || null,
+        paymentMethod: formData.paymentMethod || null,
         utrId:     formData.utrId        || null,
+        loginEmail: formData.loginEmail  || null,
+        loginPassword: formData.loginPassword || null,
       }),
     });
     const data = await response.json();
-    if (data.registrationId) registration.backendId = data.registrationId;
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Registration could not be saved.');
+    }
+    if (requiresVerifiedPayment && data.regType !== 'VIP') {
+      throw new Error('Payment was not verified, so VIP registration was not created.');
+    }
 
-    // 3. Sync registration to the user account on backend
+    if (data.registrationId) registration.backendId = data.registrationId;
+    registration.regType = data.regType || registration.regType;
+    registration.amount = Number(data.amount ?? registration.amount) || 0;
+    registration.paymentId = data.paymentId || registration.paymentId || null;
+    registration.paymentMethod = data.paymentMethod || registration.paymentMethod || null;
+    formData.regType = registration.regType;
+    formData.paymentId = registration.paymentId;
+    formData.paymentMethod = registration.paymentMethod;
+
+    saveRegistrationToUser(registration);
+
+    // Sync registration to the user account on backend
     await syncRegistrationToBackend(registration);
 
-    showSuccessModal(formData, registration, false);
+    showSuccessModal(formData, registration, false, data);
 
   } catch (error) {
-    // Already saved locally above — do NOT save again
-    console.warn('Backend offline, saved to localStorage only:', error.message);
-    showSuccessModal(formData, registration, true);
+    console.warn('Registration save failed:', error.message);
+    if (requiresVerifiedPayment) {
+      alert(error.message || 'Payment verification failed. Please try again.');
+    } else {
+      showSuccessModal(formData, registration, true);
+    }
   } finally {
     isSubmittingRegistration = false;
     if (submitBtn) {
       submitBtn.disabled    = false;
-      submitBtn.textContent = '🚀 Register & Get WhatsApp Link';
+      submitBtn.textContent = 'Register & Get Meet Link';
     }
   }
 }
 
 // ---- SUCCESS MODAL ----
-function showSuccessModal(formData, registration, offline = false) {
+function showSuccessModal(formData, registration, offline = false, delivery = null) {
   const modalMsg     = document.getElementById('modalMessage');
   const modalDetails = document.getElementById('modalDetails');
   const session      = JSON.parse(localStorage.getItem('sw_user') || 'null');
 
-  modalMsg.textContent = offline
-    ? 'You\'re registered! Our team will send your Zoom link on WhatsApp shortly.'
-    : `Your Zoom link has been sent to ${formData.phone} on WhatsApp!`;
+  if (offline) {
+    modalMsg.textContent = 'You\'re registered! Our team will send your Meet link on email and WhatsApp shortly.';
+  } else if (delivery && !delivery.emailSent && !delivery.whatsappSent) {
+    modalMsg.textContent = 'You\'re registered! Automatic email/WhatsApp delivery is not configured yet.';
+  } else {
+    const sentTo = [
+      delivery?.emailSent ? formData.email : null,
+      delivery?.whatsappSent ? formData.phone : null,
+    ].filter(Boolean).join(' and ');
+    modalMsg.textContent = `Your Meet link has been sent to ${sentTo || 'your registered contact details'}.`;
+  }
 
   const payLine = formData.regType === 'VIP'
-    ? `💳 Payment: ₹499 ${formData.paymentId ? '(' + formData.paymentId + ')' : '(confirmed)'}`
+    ? `💳 Payment: ₹99 ${formData.paymentId ? '(' + formData.paymentId + ')' : '(confirmed)'}`
     : '🎁 Registration: FREE';
 
   const dashLine = session
@@ -534,11 +640,11 @@ function showSuccessModal(formData, registration, offline = false) {
     👤 Name: <strong>${formData.name}</strong><br/>
     📧 Email: ${formData.email}<br/>
     📱 WhatsApp: ${formData.phone}<br/>
-    📅 Date: <strong>Tuesday, 21 July 2026 at 7:00 PM IST</strong><br/>
-    💻 Platform: Zoom<br/>
+    📅 Date: <strong>Tuesday, 21 July 2026 at 7:00 PM UTC</strong><br/>
+    💻 Platform: Google Meet<br/>
     🎫 Type: <strong>${formData.regType}</strong> Registration<br/>
     ${payLine}<br/><br/>
-    🔗 Zoom Link: <code style="font-size:0.75rem;word-break:break-all;">${CONFIG.ZOOM_LINK}</code><br/><br/>
+    🔗 Meet Link: <code style="font-size:0.75rem;word-break:break-all;">${CONFIG.MEET_LINK}</code><br/><br/>
     ${dashLine}
   `;
 
@@ -547,7 +653,6 @@ function showSuccessModal(formData, registration, offline = false) {
   // Reset form
   document.getElementById('registerForm').reset();
   document.getElementById('paymentMethodSection').style.display = 'none';
-  document.getElementById('upiQRSection').style.display        = 'none';
   document.getElementById('opt-free').classList.add('active');
   document.getElementById('opt-paid').classList.remove('active');
 }
@@ -571,7 +676,7 @@ document.getElementById('successModal').addEventListener('click', function (e) {
   const pending = JSON.parse(localStorage.getItem('sw_pending_reg') || 'null');
   if (payment === 'success' && pending) {
     localStorage.removeItem('sw_pending_reg');
-    pending.paymentId     = 'PP_' + Date.now();
+    pending.paymentId     = params.get('txnId') || ('PP_' + Date.now());
     pending.paymentMethod = 'PhonePe';
     submitRegistration(pending);
     // Scroll to registration section
@@ -611,6 +716,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
 // ---- INIT (safe on all pages that include app.js) ----
 document.addEventListener('DOMContentLoaded', () => {
+  loadWebinarDetails();
   updateNavbarAuth();
   toggleAccountFields();
 });
