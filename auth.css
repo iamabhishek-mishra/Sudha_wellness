@@ -312,7 +312,45 @@
   .upcoming-webinar-card{flex-direction:column}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
 }
-@media(max-width:480px){.stats-grid{grid-template-columns:1fr 1fr}.booking-card{flex-direction:column}.booking-card-right{align-items:flex-start}.dash-header{flex-direction:column}}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .booking-card{flex-direction:column}
+  .booking-card-right{align-items:flex-start}
+  .dash-header{flex-direction:column}
+  .dash-header-left h2{font-size:1.2rem}
+  .dash-header-left p{font-size:.78rem}
+  .stats-card{padding:14px}
+  .stats-value{font-size:1.4rem}
+  .container{padding:0 14px}
+  .nav-wrap{padding:0 14px}
+  .dashboard-content{padding:16px 12px}
+  .section-card{padding:16px}
+  .upcoming-webinar-card{padding:16px}
+  .uwc-left h3{font-size:1rem}
+  .uwc-meta-row{flex-wrap:wrap;gap:6px}
+  .booking-card{padding:14px}
+  .bc-left h4{font-size:.88rem}
+  .profile-field label{font-size:.72rem}
+  .profile-field input{padding:9px 12px;font-size:.84rem}
+  .dash-toast{font-size:.78rem;padding:10px 12px}
+}
+@media(max-width:375px){
+  .stats-grid{grid-template-columns:1fr;gap:10px}
+  .dash-header-left h2{font-size:1.05rem}
+  .stats-value{font-size:1.25rem}
+  .stats-label{font-size:.65rem}
+  .stats-card{padding:12px}
+  .badge-free-adm,.badge-vip-adm{padding:1px 7px;font-size:.62rem}
+  .upcoming-webinar-card{padding:12px}
+  .uwc-left h3{font-size:.9rem}
+  .uwc-meta-row{font-size:.78rem}
+  .booking-card{padding:12px}
+  .bc-left h4{font-size:.82rem}
+  .bc-left p{font-size:.75rem}
+  .btn-hero-primary{padding:8px 16px;font-size:.8rem}
+  .sidebar-link{font-size:.78rem;padding:6px 10px}
+  .dash-toast{font-size:.75rem;padding:8px 10px;right:8px;top:74px}
+}
 
 /* ================================================
    DASHBOARD FIX PATCH

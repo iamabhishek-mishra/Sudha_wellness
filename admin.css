@@ -71,4 +71,36 @@
   .admin-sidebar .sidebar-link{white-space:nowrap}
   .admin-sidebar .sidebar-divider{display:none}
   .adm-settings-grid{grid-template-columns:1fr}
+  .adm-whatsapp-layout{flex-direction:column}
+  .admin-content{padding:20px 18px}
+}
+@media(max-width:640px){
+  .admin-content{padding:16px 12px}
+  .admin-login-card{padding:32px 24px}
+  .admin-login-card h2{font-size:1.4rem}
+  .adm-table-wrap{margin:0 -12px;padding:0 12px}
+  .adm-search{min-width:0;width:100%}
+  .adm-filters{flex-direction:column;gap:8px}
+  .adm-settings-grid{grid-template-columns:1fr}
+  .adm-nav-badge{display:none}
+  .admin-navbar .nav-wrap{padding:0 14px}
+  .admin-navbar .logo-name{font-size:.82rem}
+}
+@media(max-width:480px){
+  .admin-login-card{padding:28px 18px}
+  .admin-login-card h2{font-size:1.25rem}
+  .adm-btn-primary,.adm-btn-secondary{padding:8px 14px;font-size:.8rem;width:100%;justify-content:center}
+  .adm-table{font-size:.75rem}
+  .adm-table th,.adm-table td{padding:8px 10px}
+  .adm-table td{word-break:break-word}
+  .admin-content{padding:14px 10px}
+  .adm-action-btn{padding:4px 8px;font-size:.65rem}
+  .badge-vip-adm,.badge-free-adm,.badge-paid,.badge-upcoming,.badge-done{font-size:.6rem;padding:1px 6px}
+}
+@media(max-width:375px){
+  .admin-login-card{padding:24px 14px}
+  .admin-login-card h2{font-size:1.1rem}
+  .admin-login-card>p{font-size:.78rem}
+  .adm-table{font-size:.7rem}
+  .adm-table th,.adm-table td{padding:6px 6px}
 }

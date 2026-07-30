@@ -627,4 +627,80 @@ img{display:block;max-width:100%}
   .agenda-item{grid-template-columns:44px 24px 1fr}
   .speaker-stats-row{grid-template-columns:repeat(2,1fr)}
   .swm-actions{flex-direction:column}
+  .hero-sub{font-size:.9rem}
+  .hero-actions{flex-direction:column}
+  .hero-actions .btn-hero-primary,
+  .hero-actions .btn-hero-ghost{width:100%;justify-content:center}
+  .reg-form-card{padding:24px 18px}
+  .rf-type-options{gap:6px}
+  .rf-type-opt{padding:10px 12px}
+  .container{padding:0 16px}
+  .nav-wrap{padding:0 16px}
+  .hero-inner{padding:0 16px}
+}
+@media(max-width:480px){
+  .hero-h1{font-size:clamp(1.5rem,7vw,1.85rem)}
+  .hero-meta-row{flex-direction:column;gap:12px}
+  .hero-social-proof{flex-direction:column;align-items:flex-start;gap:8px}
+  .countdown{gap:2px}
+  .cu{padding:8px 4px}
+  .cu span{font-size:1.2rem}
+  .cu small{font-size:.5rem}
+  .cu-sep{font-size:1.1rem;padding-bottom:6px}
+  .hcard-checklist{gap:8px}
+  .hck{font-size:.78rem}
+  .btn-hero-primary,.btn-hero-ghost{padding:12px 20px;font-size:.85rem;justify-content:center}
+  .section-h2{font-size:clamp(1.4rem,5vw,1.7rem)}
+  .section-sub{font-size:.85rem}
+  .trust-item{padding:6px 12px}
+  .trust-num{font-size:1.1rem}
+  .trust-lbl{font-size:.68rem}
+  .learn-card{padding:18px}
+  .learn-card h3{font-size:.88rem}
+  .learn-card p{font-size:.8rem}
+  .agenda-item{grid-template-columns:36px 20px 1fr}
+  .ag-time{font-size:.72rem}
+  .ag-content h4{font-size:.85rem}
+  .ag-content p{font-size:.78rem}
+  .speaker-photo{width:90px;height:90px;font-size:2rem}
+  .speaker-title{font-size:.8rem}
+  .speaker-bio{font-size:.85rem}
+  .speaker-stats-row{grid-template-columns:repeat(2,1fr);gap:10px}
+  .ss-item{padding:12px 8px}
+  .ss-item strong{font-size:1.2rem}
+  .ss-item span{font-size:.65rem}
+  .review-card{padding:18px}
+  .rc-text{font-size:.82rem}
+  .rpb-now{font-size:1.6rem}
+  .rfc-header h3{font-size:1.2rem}
+  .rf-group label{font-size:.75rem}
+  .rf-group input,.rf-group select{padding:10px 12px;font-size:.84rem}
+  .btn-register{padding:12px;font-size:.88rem}
+  .sw-modal{padding:24px 18px;margin:0 10px}
+  .sw-modal h3{font-size:1.3rem}
+  .swm-details{font-size:.78rem}
+  .faq-q{font-size:.85rem;padding:14px 0}
+  .faq-a{font-size:.82rem}
+  .footer-top{padding:40px 0}
+  .ft-desc{font-size:.78rem}
+  .ft-col a{font-size:.78rem}
+}
+@media(max-width:375px){
+  .hero-h1{font-size:clamp(1.3rem,6vw,1.5rem)}
+  .hero{padding:36px 0 48px}
+  .hero-sub{font-size:.82rem;margin-bottom:20px}
+  .chip{font-size:.62rem;padding:4px 10px}
+  .cu{padding:6px 3px}
+  .cu span{font-size:1rem}
+  .cu-sep{font-size:.9rem}
+  .sw-modal{padding:20px 14px}
+  .swm-icon{font-size:2.5rem}
+  .sw-modal h3{font-size:1.1rem}
+  .reg-form-card{padding:18px 14px}
+  .rf-type-opt{padding:8px 10px}
+  .rfto-left strong{font-size:.8rem}
+  .rfto-price{font-size:.9rem}
+  .rf-phone .rf-code{padding:10px 10px;font-size:.8rem}
+  .rf-phone input{padding:10px 10px}
+  .rpb{padding:10px 12px;font-size:.8rem}
 }
