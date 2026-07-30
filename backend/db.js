@@ -54,11 +54,6 @@ async function getPool() {
       enableKeepAlive: true,
       keepAliveInitialDelay: 0,
       ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
-      authPlugins: {
-        caching_sha2_password: (password) => {
-          return Buffer.from(password);
-        }
-      },
     });
     pool.pool.on('connection', () => log('info', 'mysql.connection.new'));
     log('info', 'mysql.pool.created');
