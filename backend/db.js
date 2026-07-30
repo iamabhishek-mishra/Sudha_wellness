@@ -53,6 +53,7 @@ async function getPool() {
       timezone: '+00:00',
       enableKeepAlive: true,
       keepAliveInitialDelay: 0,
+      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
     });
     pool.pool.on('connection', () => log('info', 'mysql.connection.new'));
     log('info', 'mysql.pool.created');
